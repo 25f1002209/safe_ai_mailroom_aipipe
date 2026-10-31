@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: safe-ai-mailroom
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn asgi:application --host 0.0.0.0 --port $PORT --timeout-keep-alive 60
+    healthCheckPath: /health
+    disk:
+      name: mailroom-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_BASE_URL
+        value: https://aipipe.org/openai/v1
+      - key: AI_MODEL
+        value: gpt-4.1-nano
+      - key: DATABASE_PATH
+        value: /var/data/mailroom.db
+      - key: AI_TIMEOUT
+        value: "35"
+      - key: MAX_REQUEST_BYTES
+        value: "524288"
