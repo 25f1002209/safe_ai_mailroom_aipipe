@@ -174,8 +174,9 @@ def handle_propose(body):
            response_text, "awaiting_receipts"))
         for d, p in zip(dossiers, proposals):
             fp = sha256_hex(canonical_json(d))
-            conn.execute("""INSERT OR IGNORE INTO dossier_cache
-              (dossier_id, content_fingerprint, proposal_json) VALUES (?,?,?)""",
+            conn.execute("""INSERT INTO dossier_cache
+              (dossier_id, content_fingerprint, proposal_json) VALUES (?,?,?)
+              ON CONFLICT (dossier_id, content_fingerprint) DO NOTHING""",
               (d["dossierId"], fp, canonical_json(p).decode()))
             pd = proposal_digest(p)
             conn.execute("""INSERT INTO proposals
